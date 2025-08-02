@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using AS_CMS.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 
 namespace AS_CMS.Application.DTOs;

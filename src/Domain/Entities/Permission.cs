@@ -195,5 +195,6 @@ public enum PermissionEnums
     // Admin Tickets
     SendAdminMessageButton = 4101,
     CloseTicketButton = 4102,
-    DownloadAttachmentButton = 4103
+    DownloadAttachmentButton = 4103,
+    GetUserPermissions = 4104
 } 

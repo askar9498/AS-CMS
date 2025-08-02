@@ -9,6 +9,8 @@ using AS_CMS.Infrastructure.Identity;
 using AS_CMS.Api.Middleware;
 using AS_CMS.Shared.Exceptions;
 using AutoMapper;
+using Infrastructure.Identity;
+using AS_CMS.Domain.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

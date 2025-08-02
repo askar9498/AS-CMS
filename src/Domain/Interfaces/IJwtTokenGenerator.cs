@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using AS_CMS.Domain.Entities;
 
-namespace AS_CMS.Application.Interfaces;
+namespace AS_CMS.Domain.Interfaces;
 
 public interface IJwtTokenGenerator
 {

@@ -29,11 +29,11 @@ public class UserController : ControllerBase
     {
         try
         {
-            _logger.Information("Login attempt for user: {Email}", request.Email);
+            _logger.LogInformation("Login attempt for user: {Email}", request.Email);
             
             var result = await _userService.AuthenticateAsync(request);
             
-            _logger.Information("User {Email} logged in successfully", request.Email);
+            _logger.LogInformation("User {Email} logged in successfully", request.Email);
             
             return Ok(new ApiResponseDto<LoginResponseDto>
             {
@@ -44,7 +44,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Login failed for user: {Email}", request.Email);
+            _logger.LogError(ex, "Login failed for user: {Email}", request.Email);
             return BadRequest(new ApiResponseDto<LoginResponseDto>
             {
                 Success = false,
@@ -71,7 +71,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Token refresh failed");
+            _logger.LogError(ex, "Token refresh failed");
             return BadRequest(new ApiResponseDto<LoginResponseDto>
             {
                 Success = false,
@@ -96,7 +96,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Token revocation failed");
+            _logger.LogError(ex, "Token revocation failed");
             return BadRequest(new ApiResponseDto<object>
             {
                 Success = false,
@@ -127,7 +127,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to retrieve users");
+            _logger.LogError(ex, "Failed to retrieve users");
             return BadRequest(new ApiResponseDto<PagedResponseDto<UserResponse>>
             {
                 Success = false,
@@ -163,7 +163,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to retrieve user: {UserId}", userId);
+            _logger.LogError(ex, "Failed to retrieve user: {UserId}", userId);
             return BadRequest(new ApiResponseDto<UserResponse>
             {
                 Success = false,
@@ -199,7 +199,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to retrieve user by email: {Email}", email);
+            _logger.LogError(ex, "Failed to retrieve user by email: {Email}", email);
             return BadRequest(new ApiResponseDto<UserResponse>
             {
                 Success = false,
@@ -226,7 +226,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to search users");
+            _logger.LogError(ex, "Failed to search users");
             return BadRequest(new ApiResponseDto<List<UserResponse>>
             {
                 Success = false,
@@ -242,11 +242,11 @@ public class UserController : ControllerBase
     {
         try
         {
-            _logger.Information("Individual user registration attempt: {Email}", request.Email);
+            _logger.LogInformation("Individual user registration attempt: {Email}", request.Email);
             
             var user = await _userService.CreateIndividualUserAsync(request);
             
-            _logger.Information("Individual user registered successfully: {Email}", request.Email);
+            _logger.LogInformation("Individual user registered successfully: {Email}", request.Email);
             
             return Ok(new ApiResponseDto<UserResponse>
             {
@@ -257,7 +257,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Individual user registration failed: {Email}", request.Email);
+            _logger.LogError(ex, "Individual user registration failed: {Email}", request.Email);
             return BadRequest(new ApiResponseDto<UserResponse>
             {
                 Success = false,
@@ -273,11 +273,11 @@ public class UserController : ControllerBase
     {
         try
         {
-            _logger.Information("Corporate user registration attempt: {Email}", request.Email);
+            _logger.LogInformation("Corporate user registration attempt: {Email}", request.Email);
             
             var user = await _userService.CreateCorporateUserAsync(request);
             
-            _logger.Information("Corporate user registered successfully: {Email}", request.Email);
+            _logger.LogInformation("Corporate user registered successfully: {Email}", request.Email);
             
             return Ok(new ApiResponseDto<UserResponse>
             {
@@ -288,7 +288,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Corporate user registration failed: {Email}", request.Email);
+            _logger.LogError(ex, "Corporate user registration failed: {Email}", request.Email);
             return BadRequest(new ApiResponseDto<UserResponse>
             {
                 Success = false,
@@ -315,7 +315,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to update user: {UserId}", userId);
+            _logger.LogError(ex, "Failed to update user: {UserId}", userId);
             return BadRequest(new ApiResponseDto<UserResponse>
             {
                 Success = false,
@@ -341,7 +341,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to delete user: {UserId}", userId);
+            _logger.LogError(ex, "Failed to delete user: {UserId}", userId);
             return BadRequest(new ApiResponseDto<object>
             {
                 Success = false,
@@ -372,7 +372,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to complete individual profile");
+            _logger.LogError(ex, "Failed to complete individual profile");
             return BadRequest(new ApiResponseDto<UserResponse>
             {
                 Success = false,
@@ -399,7 +399,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to complete corporate profile");
+            _logger.LogError(ex, "Failed to complete corporate profile");
             return BadRequest(new ApiResponseDto<UserResponse>
             {
                 Success = false,
@@ -429,7 +429,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to reset password for user: {UserId}", userId);
+            _logger.LogError(ex, "Failed to reset password for user: {UserId}", userId);
             return BadRequest(new ApiResponseDto<object>
             {
                 Success = false,
@@ -455,7 +455,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to change password");
+            _logger.LogError(ex, "Failed to change password");
             return BadRequest(new ApiResponseDto<object>
             {
                 Success = false,
@@ -485,7 +485,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to set user accuracy: {Email}", request.Email);
+            _logger.LogError(ex, "Failed to set user accuracy: {Email}", request.Email);
             return BadRequest(new ApiResponseDto<object>
             {
                 Success = false,
@@ -511,7 +511,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to activate user: {UserId}", userId);
+            _logger.LogError(ex, "Failed to activate user: {UserId}", userId);
             return BadRequest(new ApiResponseDto<object>
             {
                 Success = false,
@@ -537,7 +537,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to deactivate user: {UserId}", userId);
+            _logger.LogError(ex, "Failed to deactivate user: {UserId}", userId);
             return BadRequest(new ApiResponseDto<object>
             {
                 Success = false,
@@ -568,7 +568,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to retrieve roles");
+            _logger.LogError(ex, "Failed to retrieve roles");
             return BadRequest(new ApiResponseDto<List<UserGroupDto>>
             {
                 Success = false,
@@ -595,7 +595,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to create role");
+            _logger.LogError(ex, "Failed to create role");
             return BadRequest(new ApiResponseDto<UserGroupDto>
             {
                 Success = false,
@@ -622,7 +622,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to update role: {RoleId}", roleId);
+            _logger.LogError(ex, "Failed to update role: {RoleId}", roleId);
             return BadRequest(new ApiResponseDto<UserGroupDto>
             {
                 Success = false,
@@ -648,7 +648,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to delete role: {RoleId}", roleId);
+            _logger.LogError(ex, "Failed to delete role: {RoleId}", roleId);
             return BadRequest(new ApiResponseDto<object>
             {
                 Success = false,
@@ -674,7 +674,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to set user role");
+            _logger.LogError(ex, "Failed to set user role");
             return BadRequest(new ApiResponseDto<object>
             {
                 Success = false,
@@ -705,7 +705,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to retrieve permissions");
+            _logger.LogError(ex, "Failed to retrieve permissions");
             return BadRequest(new ApiResponseDto<List<PermissionDto>>
             {
                 Success = false,
@@ -732,7 +732,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to retrieve user permissions: {UserId}", userId);
+            _logger.LogError(ex, "Failed to retrieve user permissions: {UserId}", userId);
             return BadRequest(new ApiResponseDto<List<PermissionDto>>
             {
                 Success = false,
@@ -758,7 +758,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to set user permissions: {UserId}", userId);
+            _logger.LogError(ex, "Failed to set user permissions: {UserId}", userId);
             return BadRequest(new ApiResponseDto<object>
             {
                 Success = false,
@@ -784,7 +784,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to set role permissions: {RoleId}", roleId);
+            _logger.LogError(ex, "Failed to set role permissions: {RoleId}", roleId);
             return BadRequest(new ApiResponseDto<object>
             {
                 Success = false,
@@ -815,7 +815,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to retrieve user login logs: {UserId}", userId);
+            _logger.LogError(ex, "Failed to retrieve user login logs: {UserId}", userId);
             return BadRequest(new ApiResponseDto<List<UserLoginLogDto>>
             {
                 Success = false,
@@ -846,7 +846,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to upload profile image");
+            _logger.LogError(ex, "Failed to upload profile image");
             return BadRequest(new ApiResponseDto<FileUploadResponseDto>
             {
                 Success = false,
@@ -873,7 +873,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to upload resume");
+            _logger.LogError(ex, "Failed to upload resume");
             return BadRequest(new ApiResponseDto<FileUploadResponseDto>
             {
                 Success = false,
@@ -900,7 +900,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to upload logo");
+            _logger.LogError(ex, "Failed to upload logo");
             return BadRequest(new ApiResponseDto<FileUploadResponseDto>
             {
                 Success = false,
@@ -927,7 +927,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to upload official documents");
+            _logger.LogError(ex, "Failed to upload official documents");
             return BadRequest(new ApiResponseDto<FileUploadResponseDto>
             {
                 Success = false,
@@ -967,7 +967,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to retrieve profile");
+            _logger.LogError(ex, "Failed to retrieve profile");
             return BadRequest(new ApiResponseDto<UserResponse>
             {
                 Success = false,
@@ -1003,7 +1003,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to retrieve public profile: {UserId}", userId);
+            _logger.LogError(ex, "Failed to retrieve public profile: {UserId}", userId);
             return BadRequest(new ApiResponseDto<UserResponse>
             {
                 Success = false,
@@ -1029,7 +1029,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to set public profile visibility");
+            _logger.LogError(ex, "Failed to set public profile visibility");
             return BadRequest(new ApiResponseDto<object>
             {
                 Success = false,
@@ -1059,7 +1059,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to enable two-factor authentication");
+            _logger.LogError(ex, "Failed to enable two-factor authentication");
             return BadRequest(new ApiResponseDto<object>
             {
                 Success = false,
@@ -1085,7 +1085,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to disable two-factor authentication");
+            _logger.LogError(ex, "Failed to disable two-factor authentication");
             return BadRequest(new ApiResponseDto<object>
             {
                 Success = false,
@@ -1112,7 +1112,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to validate two-factor code");
+            _logger.LogError(ex, "Failed to validate two-factor code");
             return BadRequest(new ApiResponseDto<bool>
             {
                 Success = false,
@@ -1143,7 +1143,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to retrieve user statistics");
+            _logger.LogError(ex, "Failed to retrieve user statistics");
             return BadRequest(new ApiResponseDto<Dictionary<string, int>>
             {
                 Success = false,
@@ -1174,7 +1174,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to validate email: {Email}", email);
+            _logger.LogError(ex, "Failed to validate email: {Email}", email);
             return BadRequest(new ApiResponseDto<bool>
             {
                 Success = false,
@@ -1201,7 +1201,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to validate national code: {NationalCode}", nationalCode);
+            _logger.LogError(ex, "Failed to validate national code: {NationalCode}", nationalCode);
             return BadRequest(new ApiResponseDto<bool>
             {
                 Success = false,
@@ -1228,7 +1228,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to validate company national ID: {CompanyNationalId}", companyNationalId);
+            _logger.LogError(ex, "Failed to validate company national ID: {CompanyNationalId}", companyNationalId);
             return BadRequest(new ApiResponseDto<bool>
             {
                 Success = false,

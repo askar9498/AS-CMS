@@ -41,8 +41,8 @@ public class User
     
     // User Type and Group
     public UserType UserType { get; private set; }
-    public Guid UserGroupId { get; private set; }
-    public virtual UserGroup UserGroup { get; private set; } = null!;
+    public Guid? UserGroupId { get; private set; }
+    public virtual UserGroup? UserGroup { get; private set; }
     
     // Profile Image
     public string? ProfileImageUrl { get; private set; }
@@ -111,7 +111,7 @@ public class User
         string passwordHash,
         string phoneNumber,
         UserType userType,
-        Guid userGroupId,
+        Guid? userGroupId = null,
         string? nationalCode = null)
     {
         return new User
@@ -266,6 +266,21 @@ public class User
 
     // Get full name
     public string GetFullName() => $"{FirstName} {LastName}".Trim();
+    
+    // Full name property for backward compatibility
+    public string FullName => GetFullName();
+    
+    // Update last login (alias for RecordLogin for backward compatibility)
+    public void UpdateLastLogin() => RecordLogin();
+    
+    // Update profile information
+    public void UpdateProfile(string firstName, string lastName, string? phoneNumber)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+        PhoneNumber = phoneNumber;
+        UpdatedAt = DateTime.UtcNow;
+    }
 
     // Get interests as list
     public List<string>? GetInterestsList()

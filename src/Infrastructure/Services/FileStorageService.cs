@@ -1,6 +1,7 @@
-using AS_CMS.Application.Interfaces;
+using AS_CMS.Domain.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace AS_CMS.Infrastructure.Services;
 
@@ -47,13 +48,13 @@ public class FileStorageService : IFileStorageService
             using var stream = new FileStream(filePath, FileMode.Create);
             await file.CopyToAsync(stream);
 
-            _logger.Information("File uploaded successfully: {FilePath}", filePath);
+            _logger.LogInformation("File uploaded successfully: {FilePath}", filePath);
 
             return $"/uploads/{folder}/{fileName}";
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to upload file: {FileName}", file?.FileName);
+            _logger.LogError(ex, "Failed to upload file: {FileName}", file?.FileName);
             throw;
         }
     }
@@ -71,7 +72,7 @@ public class FileStorageService : IFileStorageService
             if (File.Exists(fullPath))
             {
                 File.Delete(fullPath);
-                _logger.Information("File deleted successfully: {FilePath}", filePath);
+                _logger.LogInformation("File deleted successfully: {FilePath}", filePath);
                 return true;
             }
 
@@ -79,7 +80,7 @@ public class FileStorageService : IFileStorageService
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to delete file: {FilePath}", filePath);
+            _logger.LogError(ex, "Failed to delete file: {FilePath}", filePath);
             return false;
         }
     }
@@ -103,7 +104,7 @@ public class FileStorageService : IFileStorageService
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to get file: {FilePath}", filePath);
+            _logger.LogError(ex, "Failed to get file: {FilePath}", filePath);
             throw;
         }
     }
@@ -122,7 +123,7 @@ public class FileStorageService : IFileStorageService
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to check file existence: {FilePath}", filePath);
+            _logger.LogError(ex, "Failed to check file existence: {FilePath}", filePath);
             return false;
         }
     }

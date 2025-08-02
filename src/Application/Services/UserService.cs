@@ -1,9 +1,11 @@
 using AS_CMS.Application.DTOs;
 using AS_CMS.Application.Interfaces;
 using AS_CMS.Domain.Entities;
-using AS_CMS.Infrastructure.Identity;
+using AS_CMS.Domain.Interfaces;
 using AS_CMS.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace AS_CMS.Application.Services;
@@ -34,7 +36,7 @@ public class UserService : IUserService
 
     public async Task<LoginResponseDto> AuthenticateAsync(LoginRequestDto request)
     {
-        _logger.Information("Authenticating user: {Email}", request.Email);
+        _logger.LogInformation("Authenticating user: {Email}", request.Email);
 
         var user = await _context.Users
             .Include(u => u.UserGroup)
@@ -43,13 +45,13 @@ public class UserService : IUserService
 
         if (user == null)
         {
-            _logger.Warning("Authentication failed: User not found or inactive - {Email}", request.Email);
+            _logger.LogWarning("Authentication failed: User not found or inactive - {Email}", request.Email);
             throw new UnauthorizedAccessException("Invalid email or password");
         }
 
         if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
         {
-            _logger.Warning("Authentication failed: Invalid password for user - {Email}", request.Email);
+            _logger.LogWarning("Authentication failed: Invalid password for user - {Email}", request.Email);
             throw new UnauthorizedAccessException("Invalid email or password");
         }
 
@@ -64,7 +66,7 @@ public class UserService : IUserService
         var accessToken = _jwtTokenGenerator.GenerateAccessToken(user);
         var refreshToken = _jwtTokenGenerator.GenerateRefreshToken(user.Id);
 
-        _logger.Information("User authenticated successfully: {Email}", request.Email);
+        _logger.LogInformation("User authenticated successfully: {Email}", request.Email);
 
         return new LoginResponseDto
         {
@@ -105,15 +107,16 @@ public class UserService : IUserService
         };
     }
 
-    public async Task RevokeTokenAsync(string refreshToken)
+    public Task RevokeTokenAsync(string refreshToken)
     {
         // In a real implementation, you would add the token to a blacklist
         // For now, we'll just validate it
         var userId = _jwtTokenGenerator.ValidateRefreshToken(refreshToken);
         if (userId != Guid.Empty)
         {
-            _logger.Information("Token revoked for user: {UserId}", userId);
+            _logger.LogInformation("Token revoked for user: {UserId}", userId);
         }
+        return Task.CompletedTask;
     }
 
     #endregion
@@ -265,7 +268,7 @@ public class UserService : IUserService
 
     public async Task<UserResponse> CreateIndividualUserAsync(IndividualUserRegistrationDto request)
     {
-        _logger.Information("Creating individual user: {Email}", request.Email);
+        _logger.LogInformation("Creating individual user: {Email}", request.Email);
 
         // Validate unique email
         if (!await IsEmailUniqueAsync(request.Email))
@@ -310,14 +313,14 @@ public class UserService : IUserService
         // Send welcome email
         await _emailService.SendWelcomeEmailAsync(request.Email, user.GetFullName());
 
-        _logger.Information("Individual user created successfully: {Email}", request.Email);
+        _logger.LogInformation("Individual user created successfully: {Email}", request.Email);
 
         return await MapToUserResponseAsync(user);
     }
 
     public async Task<UserResponse> CreateCorporateUserAsync(CorporateUserRegistrationDto request)
     {
-        _logger.Information("Creating corporate user: {Email}", request.Email);
+        _logger.LogInformation("Creating corporate user: {Email}", request.Email);
 
         // Validate unique email
         if (!await IsEmailUniqueAsync(request.Email))
@@ -386,7 +389,7 @@ public class UserService : IUserService
         // Send welcome email
         await _emailService.SendWelcomeEmailAsync(request.Email, request.CompanyName);
 
-        _logger.Information("Corporate user created successfully: {Email}", request.Email);
+        _logger.LogInformation("Corporate user created successfully: {Email}", request.Email);
 
         return await MapToUserResponseAsync(user);
     }
@@ -405,7 +408,7 @@ public class UserService : IUserService
             throw new InvalidOperationException("Email already exists");
         }
 
-        // Update basic information
+        // Update basic LogInformation
         user.UpdateBasicInfo(request.FirstName, request.LastName, request.Email, request.PhoneNumber, request.NationalCode);
 
         // Handle profile image upload
@@ -435,7 +438,7 @@ public class UserService : IUserService
         user.Deactivate();
         await _context.SaveChangesAsync();
 
-        _logger.Information("User deleted (deactivated): {UserId}", userId);
+        _logger.LogInformation("User deleted (deactivated): {UserId}", userId);
     }
 
     #endregion
@@ -455,7 +458,7 @@ public class UserService : IUserService
             throw new InvalidOperationException("User is not an individual user");
         }
 
-        // Update basic information
+        // Update basic LogInformation
         user.UpdateBasicInfo(request.FirstName, request.LastName, user.Email, user.PhoneNumber, user.NationalCode);
 
         // Handle resume upload
@@ -565,7 +568,7 @@ public class UserService : IUserService
         // Send password reset email
         await _emailService.SendPasswordResetEmailAsync(user.Email, newPassword);
 
-        _logger.Information("Password reset for user: {UserId}", userId);
+        _logger.LogInformation("Password reset for user: {UserId}", userId);
     }
 
     public async Task ChangePasswordAsync(Guid userId, string currentPassword, string newPassword)
@@ -587,7 +590,7 @@ public class UserService : IUserService
         user.UpdatePassword(passwordHash);
         await _context.SaveChangesAsync();
 
-        _logger.Information("Password changed for user: {UserId}", userId);
+        _logger.LogInformation("Password changed for user: {UserId}", userId);
     }
 
     public async Task<bool> ValidatePasswordAsync(Guid userId, string password)
@@ -626,7 +629,7 @@ public class UserService : IUserService
 
         await _context.SaveChangesAsync();
 
-        _logger.Information("User accuracy updated: {Email} - Active: {IsActive}", email, isActive);
+        _logger.LogInformation("User accuracy updated: {Email} - Active: {IsActive}", email, isActive);
     }
 
     public async Task ActivateUserAsync(Guid userId)

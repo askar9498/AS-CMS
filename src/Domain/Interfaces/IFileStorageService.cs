@@ -1,4 +1,6 @@
-namespace AS_CMS.Application.Interfaces;
+using Microsoft.AspNetCore.Http;
+
+namespace AS_CMS.Domain.Interfaces;
 
 public interface IFileStorageService
 {

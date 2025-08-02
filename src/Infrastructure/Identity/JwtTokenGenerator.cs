@@ -1,13 +1,13 @@
+using AS_CMS.Domain.Entities;
+using AS_CMS.Domain.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using AS_CMS.Application.Interfaces;
-using AS_CMS.Domain.Entities;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 
-namespace AS_CMS.Infrastructure.Identity;
+namespace Infrastructure.Identity;
 
 public class JwtTokenGenerator : IJwtTokenGenerator
 {
@@ -60,12 +60,12 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         var randomNumber = new byte[64];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomNumber);
-        
+
         var refreshToken = Convert.ToBase64String(randomNumber);
-        
+
         // In a real implementation, you would store this in a database
         // with the userId and expiration time
-        
+
         return refreshToken;
     }
 
@@ -74,7 +74,7 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         // In a real implementation, you would validate the refresh token
         // against the database and return the userId if valid
         // For now, we'll return a placeholder implementation
-        
+
         try
         {
             // This is a simplified implementation
@@ -141,4 +141,4 @@ public class JwtTokenGenerator : IJwtTokenGenerator
             return null;
         }
     }
-} 
+}

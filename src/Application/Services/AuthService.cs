@@ -6,6 +6,7 @@ using AS_CMS.Shared.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using BCrypt.Net;
+using AS_CMS.Domain.Interfaces;
 
 namespace AS_CMS.Infrastructure.Identity;
 
@@ -44,7 +45,9 @@ public class AuthService : IAuthService
             request.FirstName,
             request.LastName,
             request.Email,
-            passwordHash);
+            passwordHash,
+            request.PhoneNumber ?? string.Empty,
+            UserType.Individual); // UserGroupId will be null initially
 
         // Add default role (User)
         var defaultRole = await _context.Roles
@@ -61,7 +64,7 @@ public class AuthService : IAuthService
 
         // Generate tokens
         var accessToken = _jwtTokenGenerator.GenerateAccessToken(user);
-        var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();
+        var refreshToken = _jwtTokenGenerator.GenerateRefreshToken(user.Id);
 
         // Save refresh token
         var refreshTokenEntity = RefreshToken.Create(
@@ -104,7 +107,7 @@ public class AuthService : IAuthService
 
         // Generate tokens
         var accessToken = _jwtTokenGenerator.GenerateAccessToken(user);
-        var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();
+        var refreshToken = _jwtTokenGenerator.GenerateRefreshToken(user.Id);
 
         // Revoke existing refresh tokens
         var existingTokens = await _context.RefreshTokens
@@ -159,7 +162,7 @@ public class AuthService : IAuthService
 
         // Generate new tokens
         var newAccessToken = _jwtTokenGenerator.GenerateAccessToken(user);
-        var newRefreshToken = _jwtTokenGenerator.GenerateRefreshToken();
+        var newRefreshToken = _jwtTokenGenerator.GenerateRefreshToken(user.Id);
 
         // Revoke current token
         tokenEntity.Revoke(replacedByToken: newRefreshToken);

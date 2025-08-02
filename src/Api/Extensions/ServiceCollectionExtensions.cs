@@ -1,11 +1,11 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using AS_CMS.Infrastructure.Persistence;
 using AS_CMS.Application.Interfaces;
-using AS_CMS.Infrastructure.Identity;
+using AS_CMS.Domain.Interfaces;
 using AS_CMS.Infrastructure.Configuration;
+using AS_CMS.Infrastructure.Identity;
+using AS_CMS.Infrastructure.Persistence;
+using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -31,24 +31,24 @@ public static class ServiceCollectionExtensions
         // Configure from configuration if not explicitly set
         if (string.IsNullOrEmpty(options.ConnectionString))
         {
-            options.ConnectionString = configuration.GetConnectionString("AS_CMS_Connection") 
+            options.ConnectionString = configuration.GetConnectionString("AS_CMS_Connection")
                 ?? throw new InvalidOperationException("AS_CMS_Connection connection string not found in configuration");
         }
 
         if (string.IsNullOrEmpty(options.Jwt.Key))
         {
             // Try multiple possible JWT configuration sections
-            var jwtKey = configuration["AS_CMS_Jwt:Key"] 
+            var jwtKey = configuration["AS_CMS_Jwt:Key"]
                 ?? configuration["Jwt:Key"]
-                ?? configuration["AS_CMS_Jwt:Key"] 
+                ?? configuration["AS_CMS_Jwt:Key"]
                 ?? throw new InvalidOperationException(GetJwtConfigurationError(configuration));
-            
+
             options.Jwt.Key = jwtKey;
-            options.Jwt.Issuer = configuration["AS_CMS_Jwt:Issuer"] 
-                ?? configuration["Jwt:Issuer"] 
+            options.Jwt.Issuer = configuration["AS_CMS_Jwt:Issuer"]
+                ?? configuration["Jwt:Issuer"]
                 ?? options.Jwt.Issuer;
-            options.Jwt.Audience = configuration["AS_CMS_Jwt:Audience"] 
-                ?? configuration["Jwt:Audience"] 
+            options.Jwt.Audience = configuration["AS_CMS_Jwt:Audience"]
+                ?? configuration["Jwt:Audience"]
                 ?? options.Jwt.Audience;
         }
 
@@ -129,7 +129,7 @@ public static class ServiceCollectionExtensions
     private static string GetJwtConfigurationError(IConfiguration configuration)
     {
         var availableKeys = new List<string>();
-        
+
         // Check for common JWT configuration patterns
         var possibleKeys = new[]
         {
@@ -148,12 +148,12 @@ public static class ServiceCollectionExtensions
         }
 
         var errorMessage = "JWT Key not configured. ";
-        
+
         if (availableKeys.Any())
         {
             errorMessage += $"Found these JWT keys in configuration: {string.Join(", ", availableKeys)}. ";
         }
-        
+
         errorMessage += "Please add one of the following to your configuration:\n" +
                        "- 'AS_CMS_Jwt:Key'\n" +
                        "- 'Jwt:Key'\n" +
@@ -161,4 +161,4 @@ public static class ServiceCollectionExtensions
 
         return errorMessage;
     }
-} 
+}
