@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace AS_CMS.Domain.Entities;
@@ -27,97 +28,280 @@ public class User
     [MaxLength(20)]
     public string? PhoneNumber { get; private set; }
     
+    [MaxLength(50)]
+    public string? NationalCode { get; private set; }
+    
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
     public DateTime? LastLoginAt { get; private set; }
     
     public bool IsActive { get; private set; } = true;
     public bool EmailConfirmed { get; private set; } = false;
+    public bool TwoFactorEnabled { get; private set; } = false;
+    
+    // User Type and Group
+    public UserType UserType { get; private set; }
+    public Guid UserGroupId { get; private set; }
+    public virtual UserGroup UserGroup { get; private set; } = null!;
+    
+    // Profile Image
+    public string? ProfileImageUrl { get; private set; }
+    
+    // Individual User Specific Fields
+    public DateTime? BirthDate { get; private set; }
+    [MaxLength(100)]
+    public string? EducationLevel { get; private set; }
+    [MaxLength(255)]
+    public string? Expertise { get; private set; }
+    public string? ResumeUrl { get; private set; }
+    public string? Interests { get; private set; } // JSON string
+    [MaxLength(100)]
+    public string? SkillLevel { get; private set; }
+    [MaxLength(255)]
+    public string? ResearchGateLink { get; private set; }
+    [MaxLength(255)]
+    public string? OrcidLink { get; private set; }
+    [MaxLength(255)]
+    public string? GoogleScholarLink { get; private set; }
+    public string? SavedInterests { get; private set; } // JSON string
+    
+    // Corporate User Specific Fields
+    [MaxLength(255)]
+    public string? CompanyName { get; private set; }
+    [MaxLength(50)]
+    public string? CompanyNationalId { get; private set; }
+    [MaxLength(50)]
+    public string? RegistrationNumber { get; private set; }
+    [MaxLength(255)]
+    public string? ActivityField { get; private set; }
+    [MaxLength(255)]
+    public string? CompanyPhone { get; private set; }
+    [MaxLength(255)]
+    public string? CompanyDescription { get; private set; }
+    [MaxLength(255)]
+    public string? Website { get; private set; }
+    [MaxLength(255)]
+    public string? LogoUrl { get; private set; }
+    [MaxLength(255)]
+    public string? RepresentativeName { get; private set; }
+    [MaxLength(255)]
+    public string? RepresentativeEmail { get; private set; }
+    [MaxLength(50)]
+    public string? RepresentativeNationalId { get; private set; }
+    [MaxLength(20)]
+    public string? RepresentativePhone { get; private set; }
+    [MaxLength(500)]
+    public string? FullAddress { get; private set; }
+    public string? OfficialDocumentsUrl { get; private set; }
+    public bool ShowPublicProfile { get; private set; } = false;
     
     // Navigation properties
     public virtual ICollection<UserRole> UserRoles { get; private set; } = new List<UserRole>();
     public virtual ICollection<RefreshToken> RefreshTokens { get; private set; } = new List<RefreshToken>();
+    public virtual ICollection<UserLoginLog> LoginLogs { get; private set; } = new List<UserLoginLog>();
 
     // Private constructor for EF Core
     private User() { }
 
     // Factory method for creating new users
-    public static User Create(string firstName, string lastName, string email, string passwordHash)
+    public static User Create(
+        string firstName,
+        string lastName,
+        string email,
+        string passwordHash,
+        string phoneNumber,
+        UserType userType,
+        Guid userGroupId,
+        string? nationalCode = null)
     {
-        if (string.IsNullOrWhiteSpace(firstName))
-            throw new ArgumentException("First name is required", nameof(firstName));
-        
-        if (string.IsNullOrWhiteSpace(lastName))
-            throw new ArgumentException("Last name is required", nameof(lastName));
-        
-        if (string.IsNullOrWhiteSpace(email))
-            throw new ArgumentException("Email is required", nameof(email));
-        
-        if (string.IsNullOrWhiteSpace(passwordHash))
-            throw new ArgumentException("Password hash is required", nameof(passwordHash));
-
         return new User
         {
             Id = Guid.NewGuid(),
-            FirstName = firstName.Trim(),
-            LastName = lastName.Trim(),
-            Email = email.Trim().ToLowerInvariant(),
+            FirstName = firstName,
+            LastName = lastName,
+            Email = email,
             PasswordHash = passwordHash,
+            PhoneNumber = phoneNumber,
+            NationalCode = nationalCode,
+            UserType = userType,
+            UserGroupId = userGroupId,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
     }
 
-    // Business methods
-    public void UpdateProfile(string firstName, string lastName, string? phoneNumber)
+    // Update basic information
+    public void UpdateBasicInfo(string firstName, string lastName, string email, string phoneNumber, string? nationalCode)
     {
-        if (string.IsNullOrWhiteSpace(firstName))
-            throw new ArgumentException("First name is required", nameof(firstName));
-        
-        if (string.IsNullOrWhiteSpace(lastName))
-            throw new ArgumentException("Last name is required", nameof(lastName));
-
-        FirstName = firstName.Trim();
-        LastName = lastName.Trim();
-        PhoneNumber = phoneNumber?.Trim();
+        FirstName = firstName;
+        LastName = lastName;
+        Email = email;
+        PhoneNumber = phoneNumber;
+        NationalCode = nationalCode;
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void UpdatePassword(string newPasswordHash)
+    // Update password
+    public void UpdatePassword(string passwordHash)
     {
-        if (string.IsNullOrWhiteSpace(newPasswordHash))
-            throw new ArgumentException("Password hash is required", nameof(newPasswordHash));
-
-        PasswordHash = newPasswordHash;
+        PasswordHash = passwordHash;
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void ConfirmEmail()
+    // Update profile image
+    public void UpdateProfileImage(string? profileImageUrl)
     {
-        EmailConfirmed = true;
+        ProfileImageUrl = profileImageUrl;
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void UpdateLastLogin()
+    // Complete individual profile
+    public void CompleteIndividualProfile(
+        DateTime? birthDate,
+        string? educationLevel,
+        string? expertise,
+        string? resumeUrl,
+        List<string>? interests,
+        string? skillLevel,
+        string? researchGateLink,
+        string? orcidLink,
+        string? googleScholarLink,
+        List<string>? savedInterests)
+    {
+        BirthDate = birthDate;
+        EducationLevel = educationLevel;
+        Expertise = expertise;
+        ResumeUrl = resumeUrl;
+        Interests = interests != null ? System.Text.Json.JsonSerializer.Serialize(interests) : null;
+        SkillLevel = skillLevel;
+        ResearchGateLink = researchGateLink;
+        OrcidLink = orcidLink;
+        GoogleScholarLink = googleScholarLink;
+        SavedInterests = savedInterests != null ? System.Text.Json.JsonSerializer.Serialize(savedInterests) : null;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    // Complete corporate profile
+    public void CompleteCorporateProfile(
+        string companyName,
+        string companyNationalId,
+        string? registrationNumber,
+        string? activityField,
+        string? companyPhone,
+        string? companyDescription,
+        string? website,
+        string? logoUrl,
+        string? representativeName,
+        string? representativeEmail,
+        string? representativeNationalId,
+        string? representativePhone,
+        string? fullAddress,
+        string? officialDocumentsUrl)
+    {
+        CompanyName = companyName;
+        CompanyNationalId = companyNationalId;
+        RegistrationNumber = registrationNumber;
+        ActivityField = activityField;
+        CompanyPhone = companyPhone;
+        CompanyDescription = companyDescription;
+        Website = website;
+        LogoUrl = logoUrl;
+        RepresentativeName = representativeName;
+        RepresentativeEmail = representativeEmail;
+        RepresentativeNationalId = representativeNationalId;
+        RepresentativePhone = representativePhone;
+        FullAddress = fullAddress;
+        OfficialDocumentsUrl = officialDocumentsUrl;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    // Update user group
+    public void UpdateUserGroup(Guid userGroupId)
+    {
+        UserGroupId = userGroupId;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    // Set two-factor authentication
+    public void SetTwoFactorEnabled(bool enabled)
+    {
+        TwoFactorEnabled = enabled;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    // Set public profile visibility
+    public void SetPublicProfileVisibility(bool showPublic)
+    {
+        ShowPublicProfile = showPublic;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    // Record login
+    public void RecordLogin()
     {
         LastLoginAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
     }
 
+    // Deactivate user
     public void Deactivate()
     {
         IsActive = false;
         UpdatedAt = DateTime.UtcNow;
     }
 
+    // Activate user
     public void Activate()
     {
         IsActive = true;
         UpdatedAt = DateTime.UtcNow;
     }
 
-    // Computed properties
-    public string FullName => $"{FirstName} {LastName}".Trim();
-    
-    public bool IsLocked => !IsActive;
+    // Confirm email
+    public void ConfirmEmail()
+    {
+        EmailConfirmed = true;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    // Get full name
+    public string GetFullName() => $"{FirstName} {LastName}".Trim();
+
+    // Get interests as list
+    public List<string>? GetInterestsList()
+    {
+        if (string.IsNullOrEmpty(Interests))
+            return null;
+        
+        try
+        {
+            return System.Text.Json.JsonSerializer.Deserialize<List<string>>(Interests);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    // Get saved interests as list
+    public List<string>? GetSavedInterestsList()
+    {
+        if (string.IsNullOrEmpty(SavedInterests))
+            return null;
+        
+        try
+        {
+            return System.Text.Json.JsonSerializer.Deserialize<List<string>>(SavedInterests);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+}
+
+public enum UserType
+{
+    Individual = 0,
+    Corporate = 1
 } 
