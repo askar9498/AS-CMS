@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageId>AS-CMS.Backend</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>AS-CMS Team</Authors>
+    <Description>A complete backend CMS system with user management, JWT authentication, role-based access control, and Entity Framework Core integration.</Description>
+    <PackageTags>cms,backend,user-management,authentication,jwt,entity-framework,aspnet-core</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.13.0" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="FluentValidation" Version="12.0.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
+    <PackageReference Include="Serilog" Version="4.2.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="/" />
+    <None Include="PACKAGE_USAGE.md" Pack="true" PackagePath="/" />
+    <None Include="EXAMPLE_CONSUMER_PROJECT.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+  <!-- Include source files (excluding Api folder and test folders) -->
+  <ItemGroup>
+    <Compile Include="src/Domain/**/*.cs" Exclude="src/**/obj/**/*.cs;src/**/bin/**/*.cs" />
+    <Compile Include="src/Application/**/*.cs" Exclude="src/**/obj/**/*.cs;src/**/bin/**/*.cs" />
+    <Compile Include="src/Infrastructure/**/*.cs" Exclude="src/**/obj/**/*.cs;src/**/bin/**/*.cs" />
+    <Compile Include="src/Shared/**/*.cs" Exclude="src/**/obj/**/*.cs;src/**/bin/**/*.cs" />
+  </ItemGroup>
+
+</Project> 
